@@ -4,6 +4,7 @@
         class="mx-auto overflow-hidden"
         height="800"
         id="card-main-color"
+        color="red-darken-1"
         >
             <v-app-bar
             id="app-bar-color"
