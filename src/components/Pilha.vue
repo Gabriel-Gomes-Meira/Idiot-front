@@ -1,6 +1,6 @@
 <template>
     <div id="pilha">
-        <div  v-for="(card, index) in cards" :key="index" @click="InteractPilha" id="baralho">
+        <div  v-for="(card, index) in cards" :key="index" @click="InteractPilha" >
             <div id="card">
                 <img class="custom_border" id="card_img" :src="'http://localhost:8000/' + card.image" alt="">
             </div>

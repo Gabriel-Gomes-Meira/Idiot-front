@@ -4,21 +4,21 @@ import router from '@/router'
 import store from '@/store'
 import vuetify from './plugins/vuetify';
 import axios from 'axios'
-// //import Echo from 'laravel-echo';
-
-
+import Echo from 'laravel-echo';
 
 
 Vue.config.productionTip = false
-// window.Pusher = require('pusher-js');
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: process.env.VUE_APP_WEBSOCKETS_KEY,
-//     wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
-//     wsPort: 6001,
-//     forceTLS: false,
-//     disableStats: true
-// });
+window.Pusher = require('pusher-js');
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: process.env.VUE_APP_WEBSOCKETS_KEY,
+    wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
+    wsPort: 6001,
+    forceTLS: false,
+    disableStats: true,
+});
+
+
 
 new Vue({
   render: h => h(App),

@@ -1,47 +1,69 @@
 <template >
 
-    <v-row>
-        <v-col
-        cols="12"
-        lg="12"
-        :align-self="alignments[0]">
-            <hand v-if="cardshand.length>0" 
-            @InteractHand="giveCardpilha" 
-            :cards="cardshand" 
-            :player="0"></hand>
-            <!-- style="margin-top: 5%!important;
-            margin-left:30%!important;" -->
-        </v-col>
-
-        <v-col
-        cols="12"
-        lg="3"
-        :align-self="alignments[1]">
-            <deck @InteractMain="takeCard"></deck>
-        </v-col>
-
-        <v-col
-        cols="12"
-        lg="3"
-        :align-self="alignments[2]">
-            <pilha @InteractPilha="takeCardsPilha"
-            v-if="cardspilha.length>0"
-            :cards="cardspilha"></pilha>
-        </v-col>
+    <v-container style="heigth:1000px">
         
-        <v-col
-        cols="12"
-        lg="12"
-        :align-self="alignments[3]">
-            <hand v-if="cardshand.length>0"
-            :cards="cardshand"
-            @InteractHand="giveCardpilha"
-            :player="1"></hand>
-            <!-- style="margin-top: 40%;
-            margin-left:30%;"  -->
-        </v-col>
+        <v-row
+        :align-content="alignments[0]"
+        :justify="alignments[0]">
+        <v-spacer></v-spacer>
+            <v-col
+            cols="12"
+            lg="6"
+            >
+                <hand v-if="cardshand.length>0" 
+                @InteractHand="giveCardpilha" 
+                :cards="cardshand" 
+                :player="0"></hand>
+                <!-- style="margin-top: 5%!important;
+                margin-left:30%!important;" -->
+            </v-col>
+        <v-spacer></v-spacer>
+        </v-row>
 
-    </v-row>
+        <v-row
+        :align-content="alignments[1]"
+        :justify="alignments[1]">
+            <v-col
+            cols="12"
+            lg="3"
+            >
+                <deck @InteractMain="takeCard"></deck>
+            </v-col>
+
+            <v-spacer></v-spacer>
+
+            <v-col
+            cols="12"
+            lg="3"
+            >
+                <pilha @InteractPilha="takeCardsPilha"
+                v-if="cardspilha.length>0"
+                :cards="cardspilha"></pilha>
+            </v-col>
+
+            <v-spacer></v-spacer>
+        </v-row>
+
+        <v-row
+        :align-content="alignments[2]"
+        :justify="alignments[2]"
+        > 
+        <v-spacer></v-spacer>
+            <v-col
+            cols="12"
+            lg="6"
+            >
+                <hand v-if="cardshand.length>0"
+                :cards="cardshand"
+                @InteractHand="giveCardpilha"
+                :player="1"></hand>
+                <!-- style="margin-top: 40%;
+                margin-left:30%;"  -->
+            </v-col>
+        <v-spacer></v-spacer>
+        </v-row>
+    </v-container>
+    
 
 </template>
 
@@ -64,7 +86,7 @@ export default {
         return{
             cardspilha:[],
             cardshand:[],
-            alignments:['center', 'start', 'end', 'center']
+            alignments:['center', 'space-around', 'center','end']
         }
     },
 
@@ -116,10 +138,6 @@ export default {
         margin-top:20%;  
     } */
 
-    body
-    {
-    background-color: #00a000; 
-    }
     
     #card
     {
@@ -146,7 +164,11 @@ export default {
         border-bottom-right-radius: 18px;
     }
 
-    #baralho, #deck, #pilha, #hand {       position: absolute;    }
+    #deck, #pilha {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 0px;   
+    }
 
     #card {      position: relative;     }
 

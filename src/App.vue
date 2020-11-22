@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-card id="navbackg" v-if="!isLogged">
+    <v-card id="navbackg" v-if="$route.name=='Home'">
 
         <nav class="nav justify-content-center">
           <router-link class="nav-link" to="/">Home</router-link>
@@ -34,6 +34,7 @@ export default {
     }
   },
 
+  
   name: 'App'
 }
 
@@ -59,6 +60,5 @@ export default {
   html{
     overflow-y: hidden!important;
   }
-
   
 </style>

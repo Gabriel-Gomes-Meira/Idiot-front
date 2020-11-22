@@ -1,6 +1,6 @@
 <template>
 
-        <v-card
+        <v-card 
         class="mx-auto overflow-hidden"
         height="800"
         id="card-main-color"
@@ -48,19 +48,154 @@
                             class="d-flex justify-content-center">Criar Sala </v-list-item-title>
                             <v-icon :right='true'>mdi-plus-circle-outline</v-icon>
                         </v-list-item>
+                        <br>
+                        <v-list-item>
+                            <v-list-item-icon>
+                                <v-icon>mdi-gamepad-square</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title
+                            class="d-flex justify-content-center"> Atual Game </v-list-item-title>
+                            <v-icon :right='true'>mdi-access-point</v-icon>
+                        </v-list-item>
 
                     </v-list-item-group>
                 </v-list>
 
             </v-navigation-drawer>
 
-            <v-container style="heigth:1000px" v-if="group==1">
+            <v-container id="ListRooms" v-if="group==0" >
+                
+                <div v-if="!RoomEntry">
+                    <v-row v-for="(Room, index) in Rooms" :key="index">
+                        <v-col
+                        cols="12"
+                        lg="9"
+                        md="9"
+                        sm="9">
+                            <v-card>
+                                <v-card-text
+                                id="input-color">
+                                    <h3 class="">
+                                        {{Room.name}}
+                                    </h3>
+                                </v-card-text>
+                            </v-card>  
+                        </v-col>
+
+                        <v-col
+                        cols="12"
+                        lg="3"
+                        md="3"
+                        sm="3"
+                        :align-self="align"
+                        >
+                            <button
+                            class="btn btn-success btn-block text-light"
+                            @click="RoomEntry = Room"
+                            >
+                                Entrar
+                            </button>
+                        </v-col>
+                    </v-row>
+                
+                </div>
+                
+                <v-container v-else
+                >
+                    <v-row
+                    >
+                        <v-col
+                        cols="12"
+                        sm="12">   
+                            <p class="display-4 text-white text-center">{{RoomEntry.name}}</p>
+                        </v-col>
+                    </v-row>
+
+                    <form v-on:submit.prevent="Enteroom(RoomEntry)">
+                    <v-row>
+                        <v-spacer></v-spacer>
+
+                        <v-col
+                        cols="12"
+                        md="6"
+                        lg="6"
+                        sm="6"
+                        >
+                            <v-card>
+                                <v-card-text
+                                id="input-color">
+                                    <v-text-field
+                                    v-model="RoomEntry.password"
+                                    label="Senha*"
+                                    required
+                                    name="password"
+                                    ></v-text-field> 
+                                </v-card-text>  
+                            </v-card>
+                        </v-col>
+                        
+                        <v-spacer>
+                        </v-spacer>
+                    </v-row>
+
+                    <v-row>
+                        <v-spacer></v-spacer>
+                        <v-col
+                        cols="12"
+                        md="3"
+                        lg="3"
+                        sm="3"
+                        >
+                            <button
+                                class="btn btn-warning btn-block btn-lg text-white"
+                                @click="RoomEntry = undefined"
+                                >
+                                    <v-icon class="text-white"> mdi-keyboard-backspace </v-icon>
+                            </button>
+                        </v-col>
+
+                        <v-col
+                        cols="12"
+                        md="3"
+                        lg="3"
+                        sm="3"
+                        >
+                            <button
+                                class="btn btn-success btn-block btn-lg text-white"
+                                type="submit"
+                                >
+                                    Entrar
+                            </button>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                    </v-row>
+                    </form>
+
+                    
+                </v-container>
+
+                <v-row v-if="Rooms.length==0">
+                    <v-col>
+                        <v-card>
+                            <v-card-text
+                            id="alert-color">
+                                Não há salas disponíveis
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
+
+            </v-container>
+
+            <v-container style="heigth:1000px;" v-if="group==1">
                 <v-row >
                     <v-col
                     class="d-flex justify-content-center">
                         <p class="display-4 text-light">Criar Sala</p>
                     </v-col>  
                 </v-row>
+                
+                <form v-on:submit.prevent="addRoom(NewRoom)" >
                 <v-row>
                     <v-col
                     cols="12"
@@ -71,6 +206,8 @@
                             id="input-color">
                                 <v-text-field
                                 label="Nome da Sala"
+                                name="name"
+                                v-model="NewRoom.name"
                                 >
                                 </v-text-field>
                             </v-card-text>
@@ -83,6 +220,8 @@
                             id="input-color">
                                 <v-text-field
                                 label="Senha da Sala"
+                                name="password"
+                                v-model="NewRoom.password"
                                 >
                                 </v-text-field>
                             </v-card-text>
@@ -92,36 +231,162 @@
                     lg="3"
                     :align-self="align">
                         
-                        <button class="btn btn-success btn-lg btn-block">
+                        <button type="submit" class="btn btn-success btn-lg btn-block">
                             Criar
                         </button>
 
                     </v-col>
+
                 </v-row>
+                </form>
             </v-container>
 
-            <v-container style="heigth:1000px" v-if="group==0">
-                <room></room>
-            </v-container>
+            <room v-if="group==2"></room>
+
         </v-card>
 
 </template>
 
 <script>
 import room from './Room'
+import axios from 'axios'
+import Echo from 'laravel-echo'
+import Pusher from 'pusher-js'
+console.log(Pusher)
+const server = "http://localhost:8000/api/room";
+
+
 
 export default {
+    
     data: () => ({
-      drawer: false,
-      group: null,
-      align:'center'
+        drawer: false,
+        group: null,
+        align:'center',
+        Rooms:[],
+        NewRoom:{ name: '', password: '' },
+        RoomEntry:undefined,
+        Echos:undefined
     }),
+
+    mounted(){
+        this.getRooms();
+    },
 
     components:{
         room
+    },
+
+    methods:{
+
+        async addRoom(data) {
+
+            if (!this.NewRoom.name) {
+                alert('Informe o nome');
+            } else if (!this.NewRoom.password) {
+                alert('Verifique a senha!');
+            } else {
+
+                let algo = await axios.post(`${server}`+'/create', data);
+
+                this.RoomEntry = algo.data.created;
+                this.joingingbroad();
+            
+            }
+
+        },
+
+        async Enteroom(data){
+            if (!this.RoomEntry.password) {
+                alert('Verifique a senha!');
+            } else {
+                
+                await axios.post(`${server}`+'/enter/'+data.id, data);
+                
+                this.teste();
+            }
+        },
+
+        joingingbroad(){
+            //na proxima, passe o token aqui dentro como variavel
+            // axios.post("http://127.0.0.1:8000/api/users/login", {
+            //     email: this.$store.state.user.user.email,
+            //     password: 'vamoslá',
+            // })
+
+               
+                const sovai = `Bearer ${this.$store.state.user.token}`;
+                axios({
+                method: "GET",
+                url: "http://127.0.0.1:8000/api/users",
+                headers: {
+                    Authorization: sovai,
+                },
+                })
+                .then(({ data }) => {
+                    console.log(data);
+
+                    this.Echos = new Echo({
+                        broadcaster: 'pusher',
+                        key: process.env.VUE_APP_WEBSOCKETS_KEY,
+                        wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
+                        wsPort: 6001,
+                        forceTLS: false,
+                        disableStats: true,
+                        authorizer: (channel, options) => {
+                            console.log(options);
+                            return {
+                                authorize: (socketId, callback) => {
+                                    axios({
+                                        method: "POST",
+                                        url: "http://127.0.0.1:8000/api/broadcasting/auth",
+                                        headers: {
+                                            Authorization: sovai,
+                                        },
+                                        data: {
+                                            socket_id: socketId,
+                                            channel_name: channel.name,
+                                        },
+                                    })
+                                    .then((response) => {
+                                        callback(false, response.data);
+                                    })
+                                    .catch((error) => {
+                                        callback(true, error);
+                                    })
+                                },
+                            }
+                        }
+                    })
+                })
+            //})
+
+            this.enterinrom();
+        },
+
+        enterinrom(){
+            this.Echos.private(`Room${this.RoomEntry.id}`).listen('BroadcastRoom', (e) =>{
+                console.log(e.mensage)
+                }
+            )
+        },
+
+
+        getRooms(){
+            axios.get(server).then(Response=>{
+                    console.log(Response.data.rooms);
+                    this.Rooms = Response.data.rooms
+                })
+                .catch(error=>{
+                    console.log(error.Response.data.message)
+                })
+        },
+
     }
 
 }
+
+
 </script>
 
 <style>
@@ -148,4 +413,29 @@ export default {
     #input-color{
         background-color: #F9F871;
     }
+
+    #alert-color{
+        background-color: #f97171;
+        color: #f7e2e2;
+    }
+
+    #ListRooms{
+        overflow-y: auto;
+        height: 700px;
+    }
+    #ListRooms::-webkit-scrollbar{
+        width: 20px;
+        margin-top:20px!important;
+    }
+    #ListRooms::-webkit-scrollbar-track{
+        background-color: #0e302d77;
+        border-radius: 10px;
+    }
+    #ListRooms::-webkit-scrollbar-thumb{
+        background: #10433ee4;
+        border: solid #123430e4;
+        border-radius: 10px;
+
+    }
+
 </style>

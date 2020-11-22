@@ -1,7 +1,7 @@
 <template>
 
-    <div id="hand">
-        <div class="linha_mao">
+    <div >
+        <div class="linha_mao" id="hand">
             <div  v-for="(card, index) in cards" :key="index" @click="InteractHand">
                 <div id="card" >
                     <img class="custom_border" id="card_img" :src="'http://localhost:8000/' + card.image" alt="">
