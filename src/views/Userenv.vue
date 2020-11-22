@@ -307,20 +307,18 @@ export default {
             }
         },
 
-        joingingbroad(){
             //na proxima, passe o token aqui dentro como variavel
             // axios.post("http://127.0.0.1:8000/api/users/login", {
             //     email: this.$store.state.user.user.email,
             //     password: 'vamoslá',
             // })
-
-               
-                const sovai = `Bearer ${this.$store.state.user.token}`;
+        joingingbroad(){
+       
                 axios({
                 method: "GET",
                 url: "http://127.0.0.1:8000/api/users",
                 headers: {
-                    Authorization: sovai,
+                    Authorization: `Bearer ${this.$store.state.user.token}`,
                 },
                 })
                 .then(({ data }) => {
@@ -341,7 +339,7 @@ export default {
                                         method: "POST",
                                         url: "http://127.0.0.1:8000/api/broadcasting/auth",
                                         headers: {
-                                            Authorization: sovai,
+                                            Authorization: `Bearer ${this.$store.state.user.token}`,
                                         },
                                         data: {
                                             socket_id: socketId,
@@ -359,10 +357,10 @@ export default {
                         }
                     })
                 })
-            //})
 
             this.enterinrom();
         },
+            //})
 
         enterinrom(){
             this.Echos.private(`Room${this.RoomEntry.id}`).listen('BroadcastRoom', (e) =>{
