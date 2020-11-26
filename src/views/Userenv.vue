@@ -252,7 +252,8 @@ import room from './Room'
 import axios from 'axios'
 import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
-console.log(Pusher)
+console.log(Pusher);
+//window.Pusher = require('pusher-js');
 const server = "http://localhost:8000/api/room";
 
 
@@ -271,6 +272,7 @@ export default {
 
     mounted(){
         this.getRooms();
+        this.instantiatingEcho();
     },
 
     components:{
@@ -290,8 +292,7 @@ export default {
                 let algo = await axios.post(`${server}`+'/create', data);
 
                 this.RoomEntry = algo.data.created;
-                this.joingingbroad();
-            
+                this.enterinrom();
             }
 
         },
@@ -307,66 +308,67 @@ export default {
             }
         },
 
-            //na proxima, passe o token aqui dentro como variavel
-            // axios.post("http://127.0.0.1:8000/api/users/login", {
-            //     email: this.$store.state.user.user.email,
-            //     password: 'vamoslá',
-            // })
-        joingingbroad(){
+//na proxima, passe o token aqui dentro como variavel
+// axios.post("http://127.0.0.1:8000/api/users/login", {
+//     email: this.$store.state.user.user.email,
+//     password: 'vamoslá',
+// })
+        instantiatingEcho(){
        
-                axios({
-                method: "GET",
-                url: "http://127.0.0.1:8000/api/users",
-                headers: {
-                    Authorization: `Bearer ${this.$store.state.user.token}`,
-                },
-                })
-                .then(({ data }) => {
-                    console.log(data);
+            axios({
+            method: "GET",
+            url: "http://127.0.0.1:8000/api/users",
+            headers: {
+                Authorization: `Bearer ${this.$store.state.user.token}`,
+            },
+            })
+            .then(({ data }) => {
+                console.log(data);
 
-                    this.Echos = new Echo({
-                        broadcaster: 'pusher',
-                        key: process.env.VUE_APP_WEBSOCKETS_KEY,
-                        wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
-                        wsPort: 6001,
-                        forceTLS: false,
-                        disableStats: true,
-                        authorizer: (channel, options) => {
-                            console.log(options);
-                            return {
-                                authorize: (socketId, callback) => {
-                                    axios({
-                                        method: "POST",
-                                        url: "http://127.0.0.1:8000/api/broadcasting/auth",
-                                        headers: {
-                                            Authorization: `Bearer ${this.$store.state.user.token}`,
-                                        },
-                                        data: {
-                                            socket_id: socketId,
-                                            channel_name: channel.name,
-                                        },
-                                    })
-                                    .then((response) => {
-                                        callback(false, response.data);
-                                    })
-                                    .catch((error) => {
-                                        callback(true, error);
-                                    })
-                                },
-                            }
+                this.Echos = new Echo({
+                    broadcaster: 'pusher',
+                    key: process.env.VUE_APP_WEBSOCKETS_KEY,
+                    wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
+                    wsPort: 6001,
+                    forceTLS: false,
+                    disableStats: true,
+                    authHost: "http://127.0.0.1:8000",
+                    authEndpoint: "/broadcasting/auth",
+                    authorizer: (channel, options) => {
+                        console.log(options);
+                        return {
+                            authorize: (socketId, callback) => {
+                                axios({
+                                    method: "POST",
+                                    url: "http://127.0.0.1:8000/api/broadcasting/auth",
+                                    headers: {
+                                        Authorization: `Bearer ${this.$store.state.user.token}`,
+                                    },
+                                    data: {
+                                        socket_id: socketId,
+                                        channel_name: channel.name,
+                                    },
+                                })
+                                .then((response) => {
+                                    callback(false, response.data);
+                                })
+                                .catch((error) => {
+                                    callback(true, error);
+                                })
+                            },
                         }
-                    })
+                    }
                 })
+            })
 
             this.enterinrom();
         },
-            //})
 
         enterinrom(){
-            this.Echos.private(`Room${this.RoomEntry.id}`).listen('BroadcastRoom', (e) =>{
-                console.log(e.mensage)
-                }
-            )
+            this.Echos.private('Room.2')
+            .listen('BroadcastRoom', (e) =>{
+                console.log(e)
+            });    
         },
 
 
