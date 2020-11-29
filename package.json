@@ -5,14 +5,18 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "axios": "^0.21.0",
     "console": "^0.7.2",
     "core-js": "^3.6.5",
+    "express": "^4.15.2",
     "laravel-echo": "^1.9.0",
     "pusher-js": "^3.2.4",
+    "socket.io": "^3.0.3",
+    "socket.io-client": "^3.0.3",
     "vue": "^2.6.11",
     "vue-colors": "0.0.1",
     "vue-router": "^3.4.9",
@@ -30,7 +34,8 @@
     "sass-loader": "^8.0.0",
     "vue-cli-plugin-vuetify": "~2.0.7",
     "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.3.0"
+    "vuetify-loader": "^1.3.0",
+    "nodemon": "^2.0.6"
   },
   "eslintConfig": {
     "root": true,

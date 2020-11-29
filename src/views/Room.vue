@@ -14,8 +14,6 @@
                 @InteractHand="giveCardpilha" 
                 :cards="cardshand" 
                 :player="0"></hand>
-                <!-- style="margin-top: 5%!important;
-                margin-left:30%!important;" -->
             </v-col>
         <v-spacer></v-spacer>
         </v-row>
@@ -57,8 +55,6 @@
                 :cards="cardshand"
                 @InteractHand="giveCardpilha"
                 :player="1"></hand>
-                <!-- style="margin-top: 40%;
-                margin-left:30%;"  -->
             </v-col>
         <v-spacer></v-spacer>
         </v-row>
@@ -73,6 +69,7 @@ import Pilha from '../components/Pilha';
 import Deck from '../components/Deck.vue';
 import Hand from '../components/Hand.vue';
 
+import io from "socket.io-client"
 
 export default {
 
@@ -90,16 +87,43 @@ export default {
         }
     },
 
+    mounted(){
+        this.teste();
+        this.socket.on("receive-mensage", data =>{
+            console.log(data);
+        })
+    },
+    
+    created(){
+        this.socket = io.connect('http://localhost:3000');
+        this.socket.emit('new-user-conect', this.$store.state.user.user)
+    },
+
+    beforeDestroy(){
+        this.socket.on('disconnected', function() {
+            console.log('disconnected')
+        });
+    },
+
+
     methods:{
+
         takeCard(card){
             this.cardshand.push(card)
         },
+
         giveCardpilha(card){
             this.cardspilha.push(card);
         },
+
         takeCardsPilha(card){
             this.cardshand.push(card);
+        },
+
+        teste(){
+            this.socket.emit('send-mensage', "Mensagem do outro lado");
         }
+
     }
     
 }

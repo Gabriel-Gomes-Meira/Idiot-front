@@ -12,7 +12,6 @@
         </nav>
     </v-card>
     
-
     <router-view />
   </div>
 </template>
@@ -22,6 +21,7 @@ import { mapGetters } from 'vuex'
  
 
 export default {
+  
   computed: {
     ...mapGetters([
       'isLogged'
@@ -34,8 +34,8 @@ export default {
     }
   },
 
-  
   name: 'App'
+
 }
 
 

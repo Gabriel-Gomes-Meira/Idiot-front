@@ -31,15 +31,18 @@ new Vue({
     } //função created para armazenar autenticação e manusear não autenticação do usuário!
 }).$mount('#app')
 
-    // import Echo from 'laravel-echo';
-    // window.Pusher = require('pusher-js');
-    // window.Echo = new Echo({
-    //     broadcaster: 'pusher',
-    //     key: process.env.VUE_APP_WEBSOCKETS_KEY,
-    //     wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
-    //     wsPort: 6001,
-    //     authHost: "http://127.0.0.1:8000",
-    //     authEndpoint: "/broadcasting/auth",
-    //     forceTLS: false,
-    //     disableStats: true,
-    // });
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// import Echo from 'laravel-echo';
+// window.Pusher = require('pusher-js');
+// window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: process.env.VUE_APP_WEBSOCKETS_KEY,
+//     wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
+//     wsPort: 6001,
+//     authHost: "http://127.0.0.1:8000",
+//     authEndpoint: "/broadcasting/auth",
+//     forceTLS: false,
+//     disableStats: true,
+// });
