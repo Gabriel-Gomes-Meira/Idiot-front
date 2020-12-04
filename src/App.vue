@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+
     <v-card id="navbackg" v-if="$route.name=='Home'">
 
         <nav class="nav justify-content-center">
@@ -12,7 +13,7 @@
         </nav>
     </v-card>
     
-    <router-view />
+    <router-view/>
   </div>
 </template>
 
@@ -21,6 +22,7 @@ import { mapGetters } from 'vuex'
  
 
 export default {
+
   
   computed: {
     ...mapGetters([

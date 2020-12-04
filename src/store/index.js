@@ -8,7 +8,8 @@ axios.defaults.baseURL = 'http://127.0.0.1:8000/api'
 
 export default new Vuex.Store({
   state: {
-    user: null
+    user: null,
+    atualRoom: localStorage.getItem('atualRoom')
   },
 
   mutations: {
@@ -21,6 +22,16 @@ export default new Vuex.Store({
     clearUserData () {
       localStorage.removeItem('user')
       location.reload()
+    },
+
+    inGaming (state, atualRoom) {
+      state.atualRoom = atualRoom;
+      localStorage.setItem('atualRoom', JSON.stringify(atualRoom));
+    },
+    
+    outinGame () {
+      localStorage.removeItem('atualRoom');
+      this.state.atualRoom = null;
     }
   },
 
@@ -35,6 +46,14 @@ export default new Vuex.Store({
 
     logout ({ commit }) {
       commit('clearUserData')
+    },
+
+    gaming ({ commit }, room) {
+      commit('inGaming', room)
+    },
+
+    gameout ({ commit }) {
+      commit('outinGame')
     }
   },
 

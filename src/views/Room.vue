@@ -1,64 +1,69 @@
 <template >
+    <div class="vld-parent">
+        <loading :active.sync="ready" 
+        :is-full-page="false"></loading>
+        <v-container style="heigth:1000px">
 
-    <v-container style="heigth:1000px">
-        
-        <v-row
-        :align-content="alignments[0]"
-        :justify="alignments[0]">
-        <v-spacer></v-spacer>
-            <v-col
-            cols="12"
-            lg="6"
-            >
-                <hand v-if="cardshand.length>0" 
-                @InteractHand="giveCardpilha" 
-                :cards="cardshand" 
-                :player="0"></hand>
-            </v-col>
-        <v-spacer></v-spacer>
-        </v-row>
-
-        <v-row
-        :align-content="alignments[1]"
-        :justify="alignments[1]">
-            <v-col
-            cols="12"
-            lg="3"
-            >
-                <deck @InteractMain="takeCard"></deck>
-            </v-col>
-
+            <v-row
+            :align-content="alignments[0]"
+            :justify="alignments[0]">
             <v-spacer></v-spacer>
-
-            <v-col
-            cols="12"
-            lg="3"
-            >
-                <pilha @InteractPilha="takeCardsPilha"
-                v-if="cardspilha.length>0"
-                :cards="cardspilha"></pilha>
-            </v-col>
-
+                <v-col
+                cols="12"
+                lg="6"
+                >
+                    <hand v-show="player1Hand.length>0" 
+                    @InteractHand="giveCardpilha" 
+                    :cards="player1Hand" 
+                    :player="0"></hand>
+                </v-col>
             <v-spacer></v-spacer>
-        </v-row>
+            </v-row>
 
-        <v-row
-        :align-content="alignments[2]"
-        :justify="alignments[2]"
-        > 
-        <v-spacer></v-spacer>
-            <v-col
-            cols="12"
-            lg="6"
-            >
-                <hand v-if="cardshand.length>0"
-                :cards="cardshand"
-                @InteractHand="giveCardpilha"
-                :player="1"></hand>
-            </v-col>
-        <v-spacer></v-spacer>
-        </v-row>
-    </v-container>
+            <v-row
+            :align-content="alignments[1]"
+            :justify="alignments[1]">
+                <v-col
+                cols="12"
+                lg="3"
+                >
+                    <deck v-if="ready"
+                    :deck="deck"
+                    @InteractMain="takeCard"></deck>
+                </v-col>
+
+                <v-spacer></v-spacer>
+
+                <v-col
+                cols="12"
+                lg="3"
+                >
+                    <pilha @InteractPilha="takeCardsPilha"
+                    v-if="cardspilha.length>0"
+                    :cards="cardspilha"></pilha>
+                </v-col>
+
+                <v-spacer></v-spacer>
+            </v-row>
+
+            <v-row
+            :align-content="alignments[2]"
+            :justify="alignments[2]"
+            > 
+            <v-spacer></v-spacer>
+                <v-col
+                cols="12"
+                lg="6"
+                >
+                    <hand v-show="player2Hand.length>0"
+                    :cards="player2Hand"
+                    @InteractHand="giveCardpilha"
+                    :player="1"></hand>
+                </v-col>
+            <v-spacer></v-spacer>
+            </v-row>
+        </v-container>
+    </div>
     
 
 </template>
@@ -69,6 +74,9 @@ import Pilha from '../components/Pilha';
 import Deck from '../components/Deck.vue';
 import Hand from '../components/Hand.vue';
 
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 import io from "socket.io-client"
 
 export default {
@@ -76,27 +84,45 @@ export default {
     components:{
         Deck,
         Pilha,
-        Hand
+        Hand,
+        Loading
     },
 
     data(){
         return{
+            deck:[],
             cardspilha:[],
-            cardshand:[],
-            alignments:['center', 'space-around', 'center','end']
+            player1Hand:[],
+            player2Hand:[],
+            alignments:['center', 'space-around', 'center','end'],
+            ready:false,
+            socket:{}
         }
     },
 
     mounted(){
+        this.socket.emit('new-user-conect', 
+                this.$store.state.user.user, 
+                this.$store.state.atualRoom)
         this.teste();
         this.socket.on("receive-mensage", data =>{
             console.log(data);
+        })
+        this.socket.on("shuffled", data =>{
+            console.log(data);
+            this.deck = data;
+            this.ready = true;
+        })
+        this.socket.on("distribuided-hand1", data =>{
+            this.player1Hand = data
+        })
+        this.socket.on("distribuided-hand2", data =>{
+            this.player2Hand = data
         })
     },
     
     created(){
         this.socket = io.connect('http://localhost:3000');
-        this.socket.emit('new-user-conect', this.$store.state.user.user)
     },
 
     beforeDestroy(){
@@ -114,6 +140,7 @@ export default {
 
         giveCardpilha(card){
             this.cardspilha.push(card);
+            this.$store.dispatch('gameout')
         },
 
         takeCardsPilha(card){
