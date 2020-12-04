@@ -9,7 +9,7 @@ axios.defaults.baseURL = 'http://127.0.0.1:8000/api'
 export default new Vuex.Store({
   state: {
     user: null,
-    atualRoom: localStorage.getItem('atualRoom')
+    atualRoom: JSON.parse(localStorage.getItem('atualRoom'))
   },
 
   mutations: {

@@ -2,6 +2,7 @@ const Player = require ('./Player');
 const Game = require('./Game');
 const axios = require("axios");
 const Express = require("express");
+const e = require('express');
 const Http = require("http").Server(Express);
 const io = require("socket.io")(Http, {
     cors: {
@@ -26,23 +27,37 @@ io.on("connection", socket =>{
             clients.push(UserCon); // getting all users conecteds in server;
         }
         
-        if(room.qtdplayer == 2){
-            var CurrentRoom = Rooms[Rooms.indexOf('Room'+room.id)].Game
-            socket.join(CurrentRoom.Roomname);
-            CurrentRoom.player2 = new Player(UserCon);
-            CurrentRoom.sdeck = Shuffle(deck);
-            io.to(CurrentRoom.Roomname).emit("shuffled", CurrentRoom.sdeck)
-            CurrentRoom.player1.Hand = CurrentRoom.sdeck.splice(-3,3);
-            socket.to(CurrentRoom.Roomname).emit('distribuided-hand1',CurrentRoom.player1.Hand);
-            CurrentRoom.player2.Hand = CurrentRoom.sdeck.splice(-3,3);
-            socket.to(CurrentRoom.Roomname).emit('distribuided-hand2',CurrentRoom.player2.Hand);
-            console.log(Rooms);
+        var CurrentRoom = Rooms[Rooms.findIndex(e => e.Roomname == 'Room'+room.id)]
+        if(CurrentRoom){
             
+            console.log(CurrentRoom._player1._Atributes)
+            if(CurrentRoom._player1._Atributes.id == UserCon.id){
+                CurrentRoom._player1._Atributes.socketid = socket.id
+            }
+            else if(CurrentRoom._player2){
+                if(CurrentRoom._player2._Atributes.id == UserCon.id){
+                    CurrentRoom._player2._Atributes.socketid = socket.id
+                }
+            }
+            else if(room.qtdplayer == 2){
+                socket.join(CurrentRoom.Roomname);
+                CurrentRoom._player2 = new Player(UserCon);
+                CurrentRoom._sdeck = Shuffle(deck);
+                io.to(CurrentRoom.Roomname).emit("shuffled", CurrentRoom._sdeck)
+                CurrentRoom._player1.Hand = CurrentRoom.sdeck.splice(-3,3);
+                io.to(CurrentRoom.Roomname).emit('distribuided-hand1',CurrentRoom._player1._Hand);
+                CurrentRoom._player2.Hand = CurrentRoom.sdeck.splice(-3,3);
+                io.to(CurrentRoom.Roomname).emit('distribuided-hand2',CurrentRoom._player2._Hand);
+                console.log(Rooms);  
+            }
         }
-        else{
+        else
+        {
             var player1 = new Player(UserCon);
             var NGame = new Game(player1, room.id)
-            Rooms.push(NGame.Roomname,NGame);
+            socket.join(NGame.Roomname);
+            Rooms.push(NGame);
+
             console.log(Rooms);
         }
         

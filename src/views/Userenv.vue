@@ -290,7 +290,7 @@ export default {
     
     data: () => ({
         drawer: false,
-        group: 2,
+        group: null,
         align:'center',
         Rooms:[],
         NewRoom:{ name: '', password: '' },

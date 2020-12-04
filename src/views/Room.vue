@@ -1,6 +1,6 @@
 <template >
     <div class="vld-parent">
-        <loading :active.sync="ready" 
+        <loading :active="!ready" 
         :is-full-page="false"></loading>
         <v-container style="heigth:1000px">
 
@@ -114,10 +114,10 @@ export default {
             this.ready = true;
         })
         this.socket.on("distribuided-hand1", data =>{
-            this.player1Hand = data
+            this.player1Hand = data[0]
         })
         this.socket.on("distribuided-hand2", data =>{
-            this.player2Hand = data
+            this.player2Hand = data[0]
         })
     },
     
