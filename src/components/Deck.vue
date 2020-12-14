@@ -3,7 +3,7 @@
         <div id="deck">
             <div v-for="(card, index) in cards" :key="index" id="baralho" @click="InteractMain">
                 <div id="card" >
-                    <img class="custom_border" id="card_img" :src="'http://localhost:8000/' + card.image" alt="">
+                    <img class="custom_border" id="card_img" src="http://localhost:8000/card_back.png" alt="">
                 </div>
             </div>
         </div>        
@@ -27,14 +27,16 @@
         },
 
         props:{
-            deck:[]
+            deck:[],
+            playable:Boolean
         },
 
         methods:{
 
             InteractMain() {
-                this.$emit('InteractMain', this.cards[this.cards.length-1])
-                this.cards.splice(this.cards.length-1, 1) 
+                if(this.playable === true){
+                    this.$emit('InteractMain')
+                }
             }
 
         }

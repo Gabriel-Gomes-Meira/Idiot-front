@@ -2,7 +2,7 @@
     <div id="pilha">
         <div  v-for="(card, index) in cards" :key="index" @click="InteractPilha" >
             <div id="card">
-                <img class="custom_border" id="card_img" :src="'http://localhost:8000/' + card.image" alt="">
+                <img class="custom_border" id="card_img" :src="'http://localhost:8000/storage/cards/' + card.image" alt="">
             </div>
         </div>
     </div>
@@ -13,12 +13,14 @@
 export default {
 
     props:{
-        cards:[]
+        cards:[],
+        playable:Boolean
     },
     methods:{
         InteractPilha() {
-            this.$emit('InteractPilha', this.cards[this.cards.length-1])
-            this.cards.splice(this.cards.length-1, 1)
+            if(this.playable === true){
+                this.$emit('InteractPilha')
+            }
         }
     }
             

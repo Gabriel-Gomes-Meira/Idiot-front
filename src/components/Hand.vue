@@ -1,10 +1,11 @@
 <template>
 
-    <div >
+    <div>
         <div class="linha_mao" id="hand">
-            <div  v-for="(card, index) in cards" :key="index" @click="InteractHand">
-                <div id="card" >
-                    <img class="custom_border" id="card_img" :src="'http://localhost:8000/' + card.image" alt="">
+            <div  v-for="(card, index) in cards" :key="index">
+                <div id="card">
+                    <img v-if="card[index]!=='card'" @click="InteractHand(index)" class="custom_border" id="card_img" :src="'http://localhost:8000/storage/cards/' + card.image" alt="">
+                    <img v-else class="custom_border" id="card_img" src="http://localhost:8000/card_back.png" alt="">
                 </div>
             </div>
         </div>
@@ -15,19 +16,12 @@
 <script>
 export default {
     updated(){
-        this.moldar(this.handcards.length);
+        this.moldar(this.cards.length);
     },
 
     props:{
         cards:[],
-        player:Number
-    },
-
-    data(){
-        return{
-            handcards:this.cards,
-            playern:this.player
-        }
+        playable:Boolean
     },
 
     methods:{
@@ -40,9 +34,10 @@ export default {
             }
         },
         
-        InteractHand() {
-            this.$emit('InteractHand', this.cards[this.handcards.length-1])
-            this.handcards.splice(this.handcards.length-1, 1)
+        InteractHand(index) {
+            if(this.playable === true){
+                this.$emit('InteractHand', index)
+            }
         }
     }
 }

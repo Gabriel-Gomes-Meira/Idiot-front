@@ -3,6 +3,12 @@
         <loading :active="!ready" 
         :is-full-page="false"></loading>
         <v-container style="heigth:1000px">
+            
+            <poste
+            :cardR="cardsrev2"
+            :cardS="cardsets2"
+            >
+            </poste>
 
             <v-row
             :align-content="alignments[0]"
@@ -12,10 +18,9 @@
                 cols="12"
                 lg="6"
                 >
-                    <hand v-show="player1Hand.length>0" 
-                    @InteractHand="giveCardpilha" 
-                    :cards="player1Hand" 
-                    :player="0"></hand>
+                    <hand v-if="playerHand2.length>0 && ready" 
+                    :cards="playerHand2" 
+                    ></hand>
                 </v-col>
             <v-spacer></v-spacer>
             </v-row>
@@ -29,6 +34,7 @@
                 >
                     <deck v-if="ready"
                     :deck="deck"
+                    :playable="playable"
                     @InteractMain="takeCard"></deck>
                 </v-col>
 
@@ -40,7 +46,8 @@
                 >
                     <pilha @InteractPilha="takeCardsPilha"
                     v-if="cardspilha.length>0"
-                    :cards="cardspilha"></pilha>
+                    :cards="cardspilha"
+                    :playable="playable"></pilha>
                 </v-col>
 
                 <v-spacer></v-spacer>
@@ -55,13 +62,23 @@
                 cols="12"
                 lg="6"
                 >
-                    <hand v-show="player2Hand.length>0"
-                    :cards="player2Hand"
+                    <hand v-if="cardshand.length>0"
+                    :cards="cardshand"
                     @InteractHand="giveCardpilha"
-                    :player="1"></hand>
+                    :playable="playable"
+                    ></hand>
                 </v-col>
             <v-spacer></v-spacer>
             </v-row>
+
+            <poste
+            :cardR="cardsrevel"
+            :cardS="cardsets"
+            :playable="playable"
+            @InteractRevel="PlayRCard"
+            @InteractSet="PlaySCard"
+            >
+            </poste>
         </v-container>
     </div>
     
@@ -73,11 +90,10 @@
 import Pilha from '../components/Pilha';
 import Deck from '../components/Deck.vue';
 import Hand from '../components/Hand.vue';
+import Poste from '../components/Poste.vue';
 
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
-
-import io from "socket.io-client"
 
 export default {
 
@@ -85,70 +101,120 @@ export default {
         Deck,
         Pilha,
         Hand,
-        Loading
+        Loading,
+        Poste
     },
 
     data(){
         return{
             deck:[],
             cardspilha:[],
-            player1Hand:[],
-            player2Hand:[],
+            cardshand:[],
+            playerHand2:[],
+            cardsrevel:[],
+            cardsrev2:[],
+            cardsets:[],
+            cardsets2:[],
             alignments:['center', 'space-around', 'center','end'],
             ready:false,
-            socket:{}
+            playable:false
         }
     },
 
+    props:{
+        socket:{}
+    },
+
     mounted(){
-        this.socket.emit('new-user-conect', 
-                this.$store.state.user.user, 
+        
+        this.socket.on("exited-room", (msg) =>{
+            alert(msg);
+            this.$emit('disconectRoom');
+        })
+        
+        this.socket.emit('conect-room',
                 this.$store.state.atualRoom)
-        this.teste();
+
         this.socket.on("receive-mensage", data =>{
             console.log(data);
         })
+
         this.socket.on("shuffled", data =>{
-            console.log(data);
-            this.deck = data;
+            var deckescondido = this.preenchendodevazio(data, this.deck)
+            this.deck = [...deckescondido];
             this.ready = true;
         })
-        this.socket.on("distribuided-hand1", data =>{
-            this.player1Hand = data[0]
+
+        this.socket.on("distribuided-hand", data =>{
+            this.cardshand = [...data[0]];
+            var maodop2 = this.preenchendodevazio(data[1], this.playerHand2)
+            this.playerHand2 = [...maodop2];
         })
-        this.socket.on("distribuided-hand2", data =>{
-            this.player2Hand = data[0]
+
+        this.socket.on("distribuided-revel", data =>{
+            this.cardsrevel = [...data[0]];
+            this.cardsrev2 = [...data[1]];
         })
-    },
-    
-    created(){
-        this.socket = io.connect('http://localhost:3000');
+
+        this.socket.on("distribuided-set", data =>{
+            var sets = this.preenchendodevazio(data[0], this.cardsets);
+            this.cardsets = [...sets];
+
+            sets = this.preenchendodevazio(data[1], this.cardsets2);
+            this.cardsets2 = [...sets]
+        })
+
+        this.socket.on("receive-setcard", data =>{
+            this.cardsets[data[0]] = data[1];
+            this.cardspilha.push(this.cardsets[data[0]]);
+        })
+
+        this.socket.on("see-setopca", card =>{
+            this.cardspilha.push(card);
+        })
     },
 
     beforeDestroy(){
-        this.socket.on('disconnected', function() {
-            console.log('disconnected')
-        });
+        this.socket.emit('disconnect');
     },
 
 
     methods:{
 
-        takeCard(card){
-            this.cardshand.push(card)
+        takeCard(){
+            this.deck.pop(1,1)
+            this.$emit('disconectRoom');
+        },
+        
+        giveCardpilha(index){
+            this.cardspilha.push(this.cardshand[index]);
+            this.cardshand.splice(index, 1);
         },
 
-        giveCardpilha(card){
+        takeCardsPilha(){
+            this.cardshand = this.cardshand.concat(this.cardspilha.slice());
+            this.cardspilha = [];
+        },
+
+        PlayRCard(card){ 
+            // this.socket.emit('giverevtopilha', card);
             this.cardspilha.push(card);
-            this.$store.dispatch('gameout')
         },
 
-        takeCardsPilha(card){
-            this.cardshand.push(card);
+        PlaySCard(index){ 
+            this.socket.emit('givesettopilha', [index,
+                            this.$store.state.user.user.id,
+                            this.$store.state.atualRoom.id])
         },
 
-        teste(){
-            this.socket.emit('send-mensage', "Mensagem do outro lado");
+        preenchendodevazio(more, arraye){
+            if(more != 0){
+                arraye.push("card");
+                more = more-1;
+                this.preenchendodevazio(more, arraye)
+            }
+
+            return arraye;
         }
 
     }
@@ -158,38 +224,6 @@ export default {
 
 <style>
 
-    /* @media screen and (max-width: 1138px) {
-
-        #deck
-        {
-            margin-left: 5%!important;
-            margin-top:30%!important;  
-        }
-
-        #pilha
-        {
-            margin-left: 5%!important;
-            margin-top:45%!important;  
-        }
-    }
-
-    #Room{
-        position: relative;
-    }
-
-    #deck
-    {
-        margin-left: 10%;
-        margin-top:20%;  
-    }
-
-    #pilha
-    {
-        margin-left: 25%;
-        margin-top:20%;  
-    } */
-
-    
     #card
     {
         
@@ -200,7 +234,6 @@ export default {
     #card_img
     {
         max-width: 100%;
-        /* height: 405px; */
         object-fit:contain;
     }
 
@@ -215,10 +248,14 @@ export default {
         border-bottom-right-radius: 18px;
     }
 
-    #deck, #pilha {
+    #deck, #pilha, #poste {
         display: grid;
         grid-auto-flow: column;
         grid-auto-columns: 0px;   
+    }
+
+    #poste {
+        position: fixed;
     }
 
     #card {      position: relative;     }

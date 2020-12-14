@@ -1,10 +1,5 @@
 class Player{
 
-    // Atributes = {};
-    // Hand = [];
-    // Revel = [];
-    // Sets = [];
-
     constructor(User){
         this._Atributes = User;
         this._Hand = [];
@@ -29,7 +24,7 @@ class Player{
     }
 
     set Hand(params) {
-        this._Hand.push(params);
+        this._Hand = params;
     }
 
     set Sets(params) {

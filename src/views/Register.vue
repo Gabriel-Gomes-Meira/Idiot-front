@@ -102,10 +102,23 @@ export default {
                 alert('Verifique a senha!');
             } else {
 
-            await axios.post(`${server}`, data);
-
+                await axios.post(`${server}`, data)
+                this.LoginUser();
             }
+        },
 
+        LoginUser()
+        {
+            this.$store.dispatch('login', {
+            email: this.NewUser.email,
+            password: this.NewUser.password
+            })
+            .then(() => {
+            this.$router.push({ name: 'Userenv' })
+            })
+            .catch(err => {
+            console.log(err)
+            })
         }
     }
 }

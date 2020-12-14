@@ -4,6 +4,7 @@ class Game {
         this._player1 = player1;
         this._player2 = null;
         this._sdeck = null;
+        this._pilha = [];
         this.winner = null;
         this.turnof = null;
     }
@@ -16,12 +17,20 @@ class Game {
         this._sdeck = sdeck;
     }
 
+    set pilha(card) {
+        this._pilha.push(card);
+    }
+
     get player2(){
         return this._player2;
     }
 
     get sdeck(){
         return this._sdeck;
+    }
+
+    get pilha(){
+        return this._pilha;
     }
 
     get Roomname(){

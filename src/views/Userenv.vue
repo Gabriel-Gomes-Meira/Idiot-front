@@ -98,7 +98,7 @@
                             <v-card-text
                             id="input-color">
                                 <h3 class="">
-                                    {{Room.name}}
+                                    {{Room.id}}
                                 </h3>
                             </v-card-text>
                         </v-card>  
@@ -129,7 +129,7 @@
                     <v-col
                     cols="12"
                     sm="12">   
-                        <p class="display-4 text-white text-center">{{RoomEntry.name}}</p>
+                        <p class="display-4 text-white text-center">{{RoomEntry.id}}</p>
                     </v-col>
                 </v-row>
 
@@ -269,9 +269,12 @@
             </form>
         </v-container>
 
-            
-        <room 
-        v-if="group == 2 && this.$store.state.atualRoom"></room>
+        
+        <room v-if="this.$store.state.atualRoom && group == 2" 
+            @disconectRoom="disconectRoom"
+            :socket="socket"></room>
+        
+        
         
         
 
@@ -285,6 +288,7 @@ import room from './Room'
 import axios from 'axios'
 const server = "http://localhost:8000/api/room";
 
+import io from "socket.io-client"
 
 export default {
     
@@ -293,13 +297,16 @@ export default {
         group: null,
         align:'center',
         Rooms:[],
-        NewRoom:{ name: '', password: '' },
+        NewRoom:{ name: '', password: ''},
         error:false,
-        RoomEntry:undefined
+        RoomEntry:undefined, 
+        socket:{}
     }),
 
     mounted(){
         this.getRooms();
+        this.socket = io.connect('http://localhost:3000');
+        this.socket.emit("new-user-connect", this.$store.state.user.user);
     },
 
     components:{
@@ -316,8 +323,9 @@ export default {
                 alert('Verifique a senha!');
             } else {
 
+                data["player1"] = this.$store.state.user.user.id;
                 let algo = await axios.post(`${server}`+'/create', data);
-
+                this.disconectRoom();
                 this.RoomEntry = undefined;
                 this.group = 2;
                 this.$store.dispatch('gaming', algo.data.created);
@@ -330,10 +338,13 @@ export default {
                 alert('Verifique a senha!');
             } else {
                 
+                data["player2"] = this.$store.state.user.user.id;
+               console.log(this.RoomEntry);
                 var validate = await axios.post(`${server}`+'/enter/'+data.id, data);
-                if(validate.data.message == 0){
+                console.log(validate);
+                if(validate.data.confirm == '0'){
+                    this.disconectRoom();
                     this.group = 2;
-                    this.RoomEntry.qtdplayer = 2;
                     this.$store.dispatch('gaming', this.RoomEntry);
                     this.RoomEntry = undefined;
                 }
@@ -346,11 +357,16 @@ export default {
         getRooms(){
             axios.get(server).then(Response=>{
                 console.log(Response.data.rooms);
-                    this.Rooms = Response.data.rooms
+                    this.Rooms = Response.data.rooms    
                 })
                 .catch(error=>{
                     console.log(error.Response.data.message)
                 })
+        },
+
+        disconectRoom(){
+            this.socket.emit("exit-room", this.$store.state.atualRoom);
+            this.$store.dispatch('gameout');
         }
 
     }
