@@ -2,8 +2,8 @@
     <div v-if="showable">
         <div id="deck">
             <div v-for="(card, index) in cards" :key="index" id="baralho" @click="InteractMain">
-                <div id="card" >
-                    <img class="custom_border" id="card_img" src="http://localhost:8000/card_back.png" alt="">
+                <div id="facedown" >
+                    <img class="custom_border" id="facedown_img" src="http://localhost:8000/card_back.png" alt="">
                 </div>
             </div>
         </div>        

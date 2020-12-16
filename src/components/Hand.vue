@@ -1,15 +1,13 @@
 <template>
 
-    <div>
         <div class="linha_mao" id="hand">
             <div  v-for="(card, index) in cards" :key="index">
                 <div id="card">
-                    <img v-if="card[index]!=='card'" @click="InteractHand(index)" class="custom_border" id="card_img" :src="'http://localhost:8000/storage/cards/' + card.image" alt="">
+                    <img v-if="card!=='card'" @click="InteractHand(index)" class="custom_border" id="card_img" :src="'http://localhost:8000/storage/cards/' + card.image" alt="">
                     <img v-else class="custom_border" id="card_img" src="http://localhost:8000/card_back.png" alt="">
                 </div>
             </div>
         </div>
-    </div>
     
 </template>
 

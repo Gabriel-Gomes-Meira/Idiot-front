@@ -28,11 +28,11 @@ class Player{
     }
 
     set Sets(params) {
-        this._Sets.push(params);
+        this._Sets = params;
     }
 
     set Revel(params) {
-        this._Revel.push(params);
+        this._Revel = params;
     }
 }
 

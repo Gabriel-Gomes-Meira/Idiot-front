@@ -170,7 +170,7 @@ function Conectiontoroom(room, socket, UserCon)
 function ReceiveState(PlayerinRoom, DeckfromGame, AnotherPlayerinRoom)
 {
     io.to(PlayerinRoom._Atributes.socketid).emit('distribuided-hand', [PlayerinRoom._Hand, AnotherPlayerinRoom._Hand.length]);
-    io.to(PlayerinRoom._Atributes.socketid).emit('distribuided-revel',[PlayerinRoom._Revel, AnotherPlayerinRoom._Revel]);
-    io.to(PlayerinRoom._Atributes.socketid).emit('distribuided-set',[PlayerinRoom._Sets.length, AnotherPlayerinRoom._Sets.length]);
+    io.to(PlayerinRoom._Atributes.socketid).emit('distribuided-revel', [PlayerinRoom._Revel, AnotherPlayerinRoom._Revel]);
+    io.to(PlayerinRoom._Atributes.socketid).emit('distribuided-set', [PlayerinRoom._Sets.length, AnotherPlayerinRoom._Sets.length]);
     io.to(PlayerinRoom._Atributes.socketid).emit("shuffled", DeckfromGame.length);
 }

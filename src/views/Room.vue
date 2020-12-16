@@ -1,87 +1,63 @@
 <template >
+
     <div class="vld-parent">
         <loading :active="!ready" 
         :is-full-page="false"></loading>
         <v-container style="heigth:1000px">
-            
-            <poste
-            :cardR="cardsrev2"
-            :cardS="cardsets2"
-            >
-            </poste>
 
-            <v-row
-            :align-content="alignments[0]"
-            :justify="alignments[0]">
-            <v-spacer></v-spacer>
-                <v-col
-                cols="12"
-                lg="6"
-                >
+            <div id="mesa">
+                <div id="hand2">
                     <hand v-if="playerHand2.length>0 && ready" 
                     :cards="playerHand2" 
                     ></hand>
-                </v-col>
-            <v-spacer></v-spacer>
-            </v-row>
+                </div>
 
-            <v-row
-            :align-content="alignments[1]"
-            :justify="alignments[1]">
-                <v-col
-                cols="12"
-                lg="3"
-                >
+
+                <div id="poste2">
+                    <poste
+                    :cardR="cardsrev2"
+                    :cardS="cardsets2"
+                    ></poste>
+                </div>
+
+                
+                <div id="pdeck">
                     <deck v-if="ready"
                     :deck="deck"
                     :playable="playable"
                     @InteractMain="takeCard"></deck>
-                </v-col>
+                </div>
 
-                <v-spacer></v-spacer>
-
-                <v-col
-                cols="12"
-                lg="3"
-                >
+                
+                <div id="ppilha">
                     <pilha @InteractPilha="takeCardsPilha"
                     v-if="cardspilha.length>0"
                     :cards="cardspilha"
                     :playable="playable"></pilha>
-                </v-col>
+                </div>
 
-                <v-spacer></v-spacer>
-            </v-row>
+                
+                <div id="poste1">
+                    <poste
+                    :cardR="cardsrevel"
+                    :cardS="cardsets"
+                    :playable="playable"
+                    @InteractRevel="PlayRCard"
+                    @InteractSet="PlaySCard"
+                    ></poste>
+                </div>
 
-            <v-row
-            :align-content="alignments[2]"
-            :justify="alignments[2]"
-            > 
-            <v-spacer></v-spacer>
-                <v-col
-                cols="12"
-                lg="6"
-                >
+                
+                <div id="hand1">
                     <hand v-if="cardshand.length>0"
                     :cards="cardshand"
                     @InteractHand="giveCardpilha"
                     :playable="playable"
                     ></hand>
-                </v-col>
-            <v-spacer></v-spacer>
-            </v-row>
-
-            <poste
-            :cardR="cardsrevel"
-            :cardS="cardsets"
-            :playable="playable"
-            @InteractRevel="PlayRCard"
-            @InteractSet="PlaySCard"
-            >
-            </poste>
+                </div> 
+            </div>
         </v-container>
     </div>
-    
 
 </template>
 
@@ -115,9 +91,8 @@ export default {
             cardsrev2:[],
             cardsets:[],
             cardsets2:[],
-            alignments:['center', 'space-around', 'center','end'],
             ready:false,
-            playable:false
+            playable:true
         }
     },
 
@@ -128,7 +103,7 @@ export default {
     mounted(){
         
         this.socket.on("exited-room", (msg) =>{
-            alert(msg);
+            console.log(msg);
             this.$emit('disconectRoom');
         })
         
@@ -147,13 +122,15 @@ export default {
 
         this.socket.on("distribuided-hand", data =>{
             this.cardshand = [...data[0]];
+            console.log('consologando o tamanho da mão do p2')
+            console.log(data[1])
             var maodop2 = this.preenchendodevazio(data[1], this.playerHand2)
             this.playerHand2 = [...maodop2];
         })
 
         this.socket.on("distribuided-revel", data =>{
-            this.cardsrevel = [...data[0]];
-            this.cardsrev2 = [...data[1]];
+            this.cardsrevel = data[0].slice();
+            this.cardsrev2 = data[1].slice();
         })
 
         this.socket.on("distribuided-set", data =>{
@@ -210,8 +187,7 @@ export default {
         preenchendodevazio(more, arraye){
             if(more != 0){
                 arraye.push("card");
-                more = more-1;
-                this.preenchendodevazio(more, arraye)
+                this.preenchendodevazio(more-1, arraye)
             }
 
             return arraye;
@@ -224,16 +200,19 @@ export default {
 
 <style>
 
-    #card
-    {
-        
-        width: 100px!important;
-        
-    }
-
+    #card{      width: 100px!important;     }
+    
+    #facedown{  height: 150px!important;    }
+    
     #card_img
     {
         max-width: 100%;
+        object-fit:contain;
+    }
+    
+    #facedown_img
+    {
+        max-height: 100%;
         object-fit:contain;
     }
 
@@ -248,16 +227,44 @@ export default {
         border-bottom-right-radius: 18px;
     }
 
-    #deck, #pilha, #poste {
+    #deck, #pilha {
         display: grid;
         grid-auto-flow: column;
         grid-auto-columns: 0px;   
     }
 
-    #poste {
-        position: fixed;
+    #card {      position: relative;     }
+
+    #mesa{
+        display: grid;
+        width:100%;
+        /* grid-auto-flow: column; */
+        grid-template-rows: 2fr 1fr 2fr;
+        grid-template-columns: 1fr 1fr 1fr 2fr 1fr 1fr 1fr;
+        grid-template-areas:"poste2 . . hand2 . . ." 
+                            "poste2 . deck . pilha . poste1"
+                            ". . . hand1 . . poste1";
     }
 
-    #card {      position: relative;     }
+    #hand2{     grid-area: hand2;       }
+    #poste2{    grid-area: poste2;      }
+    #pdeck{     grid-area: deck;        }
+    #ppilha{    grid-area: pilha;       }
+    #poste1{    grid-area: poste1;      }
+    #hand1{     grid-area: hand1;       }
+
+    /* 768px */
+    @media (max-width: 768px){
+        #mesa{
+            grid-template-rows: 35% 30% 35%;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            grid-template-areas:"poste2  .   hand2 hand2 hand2   .   .   .   "
+                                "  .     .   deck    .   pilha   .   .   .   "
+                                "hand1 hand1 hand1   .     .     .   . poste1";
+                    
+        }
+
+ 
+    }
 
 </style>
