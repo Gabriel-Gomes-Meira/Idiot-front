@@ -60,7 +60,15 @@ io.on("connection", (socket) =>{
         var thecard = theplayer._Sets[data[0]];
         io.to(theplayer._Atributes.socketid).emit("receive-setcard", [data[0], thecard]);  
         io.to(anotherplayer._Atributes.socketid).emit("see-setopca", thecard);
+    })
 
+    socket.on('giverevtopilha', (data) =>
+    {
+        var theroom = Rooms[Rooms.findIndex(e => e.Roomname == 'Room'+data[1])];
+
+        theroom._pilha.push(data[0]);
+
+        io.to(theroom._Roomname).emit("see-pilha", theroom._pilha);
     })
 
     socket.on('disconnect', function ()

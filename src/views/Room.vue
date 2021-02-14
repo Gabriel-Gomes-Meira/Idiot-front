@@ -110,10 +110,6 @@ export default {
         this.socket.emit('conect-room',
                 this.$store.state.atualRoom)
 
-        this.socket.on("receive-mensage", data =>{
-            console.log(data);
-        })
-
         this.socket.on("shuffled", data =>{
             var deckescondido = this.preenchendodevazio(data, this.deck)
             this.deck = [...deckescondido];
@@ -122,8 +118,6 @@ export default {
 
         this.socket.on("distribuided-hand", data =>{
             this.cardshand = [...data[0]];
-            console.log('consologando o tamanho da mão do p2')
-            console.log(data[1])
             var maodop2 = this.preenchendodevazio(data[1], this.playerHand2)
             this.playerHand2 = [...maodop2];
         })
@@ -149,6 +143,11 @@ export default {
         this.socket.on("see-setopca", card =>{
             this.cardspilha.push(card);
         })
+
+        this.socket.on("see-pilha", data =>{
+            console.log(data);
+            this.cardspilha = data;
+        })
     },
 
     beforeDestroy(){
@@ -173,9 +172,10 @@ export default {
             this.cardspilha = [];
         },
 
-        PlayRCard(card){ 
-            // this.socket.emit('giverevtopilha', card);
-            this.cardspilha.push(card);
+        PlayRCard(index){ 
+            this.socket.emit('giverevtopilha', [this.cardsrevel[index],
+                                                this.$store.state.atualRoom.id]);
+            this.cardsrevel[index] = 'card';
         },
 
         PlaySCard(index){ 
@@ -239,11 +239,19 @@ export default {
         display: grid;
         width:100%;
         /* grid-auto-flow: column; */
-        grid-template-rows: 2fr 1fr 2fr;
+        grid-template-rows: repeat(4,10%) repeat(2, 5%) repeat(5,10%);
         grid-template-columns: 1fr 1fr 1fr 2fr 1fr 1fr 1fr;
-        grid-template-areas:"poste2 . . hand2 . . ." 
-                            "poste2 . deck . pilha . poste1"
-                            ". . . hand1 . . poste1";
+        grid-template-areas:"poste2 .   .  hand2  .   .   .   " 
+                            "poste2 .   .  hand2  .   .   .   "
+                            "poste2 .   .    .    .   .   .   "
+                            "poste2 .   .    .    .   .   .   "
+                            "poste2 . deck   .  pilha .   .   "
+                            "  .    . deck   .  pilha . poste1"
+                            "  .    . deck   .  pilha . poste1"
+                            "  .    . deck   .  pilha . poste1"
+                            "  .    .   .  hand1  .   . poste1"
+                            "  .    .   .  hand1  .   . poste1"
+                            "  .    .   .  hand1  .   . poste1";
     }
 
     #hand2{     grid-area: hand2;       }
@@ -253,6 +261,8 @@ export default {
     #poste1{    grid-area: poste1;      }
     #hand1{     grid-area: hand1;       }
 
+    #poste1 #poste {    flex-flow: row-reverse; }
+
     /* 768px */
     @media (max-width: 768px){
         #mesa{
@@ -261,10 +271,7 @@ export default {
             grid-template-areas:"poste2  .   hand2 hand2 hand2   .   .   .   "
                                 "  .     .   deck    .   pilha   .   .   .   "
                                 "hand1 hand1 hand1   .     .     .   . poste1";
-                    
         }
-
- 
     }
 
 </style>

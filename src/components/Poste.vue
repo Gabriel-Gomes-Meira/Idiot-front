@@ -6,11 +6,12 @@
                 <img class="custom_border" id="facedown_img" src="http://localhost:8000/card_back.png" alt="">
             </div>
 
-            <v-spacer v-else></v-spacer>
-            
-            <div id="card" @click="InteractRevel(index)">
-                <img class="custom_border" id="card_img" :src="'http://localhost:8000/storage/cards/' + cardR[index].image" alt="">
-            </div>  
+            <transition name="fade">
+                <div v-if="cardR[index]!='card'" id="card"  @click="InteractRevel(index)">
+                    <img class="custom_border" id="card_img" :src="'http://localhost:8000/storage/cards/' + cardR[index].image" alt="">
+                </div>
+            </transition>
+
         </div>
     </div>
     
@@ -28,8 +29,7 @@ export default {
     methods:{
         InteractRevel(ind) {
             if(this.playable === true){
-                this.$emit('InteractRevel', this.cardR[ind]);
-                this.cardR.splice(ind, 1);
+                this.$emit('InteractRevel', ind);
             }
         },
 
@@ -66,9 +66,11 @@ export default {
     }
 
     #poste {
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: 70px;   
+        /* display: grid;
+        grid-auto-flow: column; */
+        display: flex;
+        flex-flow: row;
+        /* grid-auto-columns: 70px;    */
     }
 
     @media (max-width: 768px){
@@ -93,9 +95,8 @@ export default {
         }
 
         #poste {
-            display: grid;
-            grid-auto-flow: column;
-            grid-auto-columns: 54px;   
+            display: flex;
+            flex-flow: row;   
         }
     }
 
