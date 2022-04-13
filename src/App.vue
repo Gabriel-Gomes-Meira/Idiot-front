@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <v id="app">
 
     <v-card id="navbackg" v-if="$route.name=='Home'">
 
@@ -14,7 +14,7 @@
     </v-card>
     
     <router-view/>
-  </div>
+  </v>
 </template>
 
 <script>

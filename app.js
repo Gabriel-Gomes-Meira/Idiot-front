@@ -71,7 +71,7 @@ io.on("connection", (socket) =>{
         io.to(theroom._Roomname).emit("see-pilha", theroom._pilha);
     })
 
-    socket.on('disconnect', function ()
+    socket.on('desconnect', function ()
     {
         console.log('a user was disconnected');
         Clients.splice(Clients.indexOf(UserCon.id), 1);

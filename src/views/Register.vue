@@ -75,8 +75,8 @@ export default {
     computed: {
     ...mapGetters([
       'isLogged'
-    ])
-  },
+    ])},
+    
     data(){
         return{
             NewUser:{name:'',email:'',password:''},

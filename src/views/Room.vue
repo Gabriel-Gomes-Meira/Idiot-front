@@ -151,7 +151,7 @@ export default {
     },
 
     beforeDestroy(){
-        this.socket.emit('disconnect');
+        this.socket.emit('desconnect');
     },
 
 

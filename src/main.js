@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from '@/router'
-import store from '@/store'
 import vuetify from './plugins/vuetify';
+import store from './plugins/store'
 import axios from 'axios'
 
 
@@ -12,8 +12,8 @@ Vue.config.productionTip = false
 new Vue({
   render: h => h(App),
   router, //pelo amor, salve router com esse nome
-  store, 
   vuetify,
+  store,
   created () {
     const userInfo = localStorage.getItem('user')
     if (userInfo) {
@@ -32,17 +32,3 @@ new Vue({
 }).$mount('#app')
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// import Echo from 'laravel-echo';
-// window.Pusher = require('pusher-js');
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: process.env.VUE_APP_WEBSOCKETS_KEY,
-//     wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
-//     wsPort: 6001,
-//     authHost: "http://127.0.0.1:8000",
-//     authEndpoint: "/broadcasting/auth",
-//     forceTLS: false,
-//     disableStats: true,
-// });

@@ -20,7 +20,7 @@
         absolute
         temporary
         id="nav-color"
-        v-if="!this.$store.state.gaming"
+        v-if="!this.$store.state.gaming"        
         >
             <v-list
                 nav
@@ -51,6 +51,7 @@
                 <v-list-item-group
                 v-model="group"
                 id="list-item-group-color"
+                @change="getRooms"
                 >
                     <v-list-item>
                         <v-list-item-icon>
